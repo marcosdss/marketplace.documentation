@@ -8,7 +8,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 const config = {
   title: 'Comolatti Developer',
   tagline: 'Documentação para desenvolvedores',
-  favicon: 'img/comolatti-favicon.ico',
+  favicon: 'img/comolatti-favicon.png',
 
   // Set the production url of your site here
   url: 'https://comolatti-documentation.vercel.app',
