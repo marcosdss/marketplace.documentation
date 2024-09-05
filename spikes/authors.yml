@@ -1,0 +1,23 @@
+marcola:
+  name: Marcos Danilo
+  title: Pleno Developer
+  url: https://github.com/mdanilo
+  image_url: https://github.com/mdanilo.png
+
+kaisuki:
+  name: Gabriel Chiba
+  title: Senior Developer
+  url: https://github.com/kaisukidev
+  image_url: https://github.com/kaisukidev.png
+
+mateus:
+  name: Mateus Carvalho
+  title: Pleno Developer
+  url: https://github.com/matteuscarvalho
+  image_url: https://github.com/matteuscarvalho.png
+
+gustavo:
+  name: Gustavo Rosano
+  title: Junior Developer
+  url: https://github.com/GustavoRosano
+  image_url: https://github.com/GustavoRosano.png

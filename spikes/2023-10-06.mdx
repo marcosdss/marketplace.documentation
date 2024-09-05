@@ -1,0 +1,58 @@
+---
+slug: release-20231006
+authors: [marcola]
+tags: [spike]
+---
+
+# Spike - LIONS 222
+
+### Assinatura | Checkout
+
+**1. Introdução**
+
+Desejamos que as informações de assinatura estejam disponíveis na etapa de checkout. Nesta etapa o cliente já terá confirmado (etapa de carrinho) os produtos do pedido, quantidade, frequência e horário para a entrega, então será necessário que ele preencha e/ ou confirme os dados pessoais, de entrega e pagamento.
+
+:::warning
+Essa modificação pode sofrer alguma instabilidade pois se trata de um ambiente totalmente construido pela VTEX. Cada dinâmica nova é inserida fora do escopo do código fonte.
+:::
+
+**2. Solução**
+
+**2.1** Podemos exibir as mensagens utilizando o recurso **orderFormUpdated.vtex** do Checkout. Com ele conseguimos observar as modificações do Checkout e exibir ou não a mensagem conforme as mudanças de produto ou modalidade de entrega.
+
+**2.2** Para exibição da mensagem teremos que utilizar **append()**, pois se trata de um ambiente fechado a modificações nativas.
+
+**3. Diretrizes para o Desenvolvimento**
+
+**3.1 Buscar as informação do Checkout**
+
+Com o **orderFormUpdated.vtex** temos acesso ao **orderForm** e consequentemente os items adicionados.
+
+**3.2 Buscar as informações de attachments**
+
+Com o **orderFormUpdated.vtex** instalado, busque pelo attachments dos items. É uma das primeiras informações listadas pelo objeto **orderForm > items**.
+
+**3.3 Validação de attachment**
+
+Verifique se existe o attachment **vtex.subscription** em algum produto do **orderForm**.
+
+**3.4 Inserção e exibição da mensagem**
+
+Procure pelos blocos **#payment-data** e **#shipping-data** e utilize o **append()** no local mais adequado para exibição da mensagem e evitando quebras de layout.
+
+**3.5 Resumo do Pedido**
+
+Para exibir a tag/mensagem no **Resumo do Pedido** podemos utilizar o elemento gerado pela VTEX (**item-subscription-time**), apenas modificando o CSS de acordo com o Figma.
+
+**3.7 Pagamento **
+
+Para evitar o prosseguimento caso o usuário tenha escolhido Retirada, podemos utilizar o **logisticsInfo** do orderForm que será entregue pelo **orderFormUpdated.vtex**, caso o usuário escolha esta modalidade.
+
+**3.7 Testes de estresse**
+
+Sugiro que faça testes e movimentações no carrinho, quantidade de produto, modalidades, CEP, dados pessoais, etc. E veja o comportamento da mensagem e do código.
+
+**:memo: Links úteis:**
+- [Checkout VTEX - Overview](https://help.vtex.com/pt/tutorial/checkout-vtex-visao-geral--7wcprkM7yZUflOqbzAN5SI)
+- [orderFormUpdated.vtex](https://github.com/vtex/vtex.js/blob/master/docs/checkout/README.md#orderformupdatedvtex-orderform)
+- [Como criar um anexo de assinatura](https://help.vtex.com/pt/tutorial/como-criar-um-anexo-de-assinatura--2bUuKyPflA8cOGLv8OvaKK)

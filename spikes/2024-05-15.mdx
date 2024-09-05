@@ -1,0 +1,108 @@
+---
+slug: release-20240515
+authors: [mateus]
+tags: [spike]
+---
+
+# Spike - LIONS 376
+
+## Breadcrumb | Estudo de viabilidade técnica para melhoria na exibição com exemplo
+
+## 1. Introdução
+
+O Breadcrumb é uma navegação usada em sites e apps para mostrar onde o usuário está. Por exemplo, na página de "bacon", ele poderia mostrar "Açougue > Suínos > Bacon", indicando a trajetória desde a página inicial até o produto atual.
+
+Atualmente, a forma como o Breadcrumb está sendo utilizado não atende à demanda do cliente OBA.
+
+## 2. Solução
+
+### 2.1 Alteração nos Blocos de Breadcrumb
+
+Atualmente, temos os seguintes locais com `breadcrumb` e `breadcrumb.search`, ambos utilizados na Store.
+
+Na página de bebidas, no template custom `template-4`, a customização do breadcrumb seria o `breadcrumb.search`, enquanto os demais utilizam `breadcrumb`, mas não funcionam corretamente. Por exemplo, na página de receita, o breadcrumb não é da VTEX, mas sim links que se assemelham a um breadcrumb. Ao adicionar o `breadcrumb` da VTEX, a funcionalidade não opera corretamente.
+
+## 3. Diretrizes para o Desenvolvimento
+
+Utilizar o repositório [vtex-apps/breadcrumb](https://github.com/vtex-apps/breadcrumb) para o nosso GitHub e realizar as mudanças necessárias para customização própria.
+
+### 3.1 Blocos do Breadcrumb
+
+A seguir estão os blocos que recebem o breadcrumb, onde `"breadcrumb.search"` funciona, enquanto o `"breadcrumb"` normal não funciona neles:
+
+`store\blocks\pages\templates\template-4\search-result-desk.jsonc`
+
+```jsonc
+"search-result-layout.desktop#template-4": {
+    "title": "Resultado da Busca - Desktop",
+    "children": [
+      "flex-layout.row#searchbread-template-4",
+      "back-button",
+      "flex-layout.row#result-template-4"
+    ],
+    "props": {
+      "pagination": "show-more",
+      "showFacetQuantity": true,
+      "preventRouteChange": true,
+      "defaultGalleryLayout": "grid",
+      "blockClass": "template-4"
+    }
+  },
+```
+Na página de receita, ocorre o mesmo problema. A troca de links pré-definidos para a alteração do breadcrumb não funcionou:
+
+`store\blocks\pages\recipe\index.jsonc`
+
+```jsonc
+  "store.custom#template-receitas": {
+    "title": "Página de Receita",
+    "blocks": [
+      "flex-layout.row#breadcrumb-recipe",
+      "flex-layout.row#recipe-back-button",
+      "flex-layout.row#recipe-page"
+    ]
+  },
+
+  "flex-layout.row#breadcrumb-recipe": {
+    "children": [
+      "link#breadcrumb-recipe",
+      "link#breadcrumb-recipe-item2",
+      "link#breadcrumb-recipe-item3"
+    ],
+    "props": {
+      "preserveLayoutOnMobile": true,
+      "colSizing": "auto",
+      "blockClass": ["breadcrumb-template01", "breadcrumb-recipe"]
+    }
+  },
+```
+
+### 3.2 Customização do Repositório
+
+É necessário obter os dados recebidos pelo `'vtex.structured-data'` e, a partir deles, desenvolver a solução com base no repositório vtex-apps/breadcrumb.
+
+## 4. Observações
+
+:::info
+Ao longo desta Spike, foi percebido que o Breadcrumb já recebe essas informações e, ao adicionar o breadcrumb em páginas como receita e bebidas, nenhum breadcrumb foi exibido adequadamente.
+:::
+
+<br />
+
+:::warning
+Atualmente, o Breadcrumb da VTEX não possui muitas informações, tornando difícil o desenvolvimento. A customização do repositório breadcrumb seria o ideal; no entanto, o desenvolvimento pode encontrar obstáculos técnicos.
+:::
+
+<br />
+
+:::note
+Ao adicionar o Breadcrumb da VTEX, a customização das páginas ficou limitada, e a funcionalidade não operou como deveria.
+:::
+
+<br / >
+
+**:memo: Links úteis:**
+- [vtex-apps/breadcrumb](https://github.com/vtex-apps/breadcrumb)
+- [Breadcrumb VTEX](https://developers.vtex.com/docs/apps/vtex.list/breadcrumbs)
+- [Breadcrumb Componente VTEX](https://developers.vtex.com/docs/apps/vtex.list/breadcrumbs)
+- [Breadcrumb control VTEX HELP](https://help.vtex.com/en/tutorial/breadcrumb-control--3qQS5O9XpusAC6oUqSIQMM?&utm_source=autocomplete)

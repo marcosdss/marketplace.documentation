@@ -1,0 +1,8 @@
+# Ignorar o diretório "node_modules/"
+node_modules/
+
+# Ignorar o diretório "coverage/"
+coverage/
+
+# Ignorar arquivos com a extensão ".snap.ts"
+*.snap.ts

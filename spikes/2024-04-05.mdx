@@ -1,0 +1,231 @@
+---
+slug: release-20240405
+authors: [gustavo]
+tags: [spike]
+---
+
+# Spike - LIONS 356
+
+## Carrinho | Inclusão de barra crescente
+
+## 1. Introdução
+
+Neste spike, propomos melhorar a experiência do usuário no carrinho de compras ao incluir uma barra de progresso que indique o avanço em direção aos benefícios de frete grátis e descontos adicionais. Atualmente, informamos aos clientes sobre a elegibilidade para frete grátis em compras acima de R$ 150,00. Agora, queremos adicionar uma barra de progresso que se complete conforme duas regras:
+
+1. Frete grátis acima de R$ 150,00.
+2. 10% de desconto no pedido em compras acima de R$ 300,00 (Exemplo meramente ilustrativo).
+
+A barra deve atingir 100% de preenchimento apenas quando o cliente atingir a segunda condição. Caso contrário, a barra deve preencher até 75% quando o cliente atingir o valor de R$ 150,00 em compras.
+
+## 2. É Possível Realizar a Criação desse Componente?
+
+Sim, é possível criar esse novo componente customizado. Nos tópicos abaixo deixo uma sugestão de como implementá-lo.
+
+## 3. Diretrizes para o Desenvolvimento
+
+O desenvolvimento deste componente requer as seguintes diretrizes:
+
+- Utilização da API vtex.order-manager/OrderForm para acessar as informações do carrinho de compras.
+- Cálculo do total dos preços dos itens no carrinho para determinar o progresso da barra de progresso.
+- Ajuste dinâmico da largura da barra de acordo com o total dos preços dos itens no carrinho.
+
+## 4. Sugestão de Desenvolvimento Interno
+
+Segue uma sugestão de implementação para o novo componente:
+
+### 4.1. Importação de Módulos e Definição de Estado
+
+O código começa importando os módulos necessários e definindo o estado inicial do componente.
+
+```js
+import React, { useState, useEffect } from 'react'
+import { useOrderForm } from 'vtex.order-manager/OrderForm'
+
+import styles from './styles.css'
+
+interface PriceBarProps {
+  freeShippingValue: number,
+  freeShippingDiscountValue: number,
+  discountValue: number
+}
+
+const PriceBar = ({
+  freeShippingValue,
+  freeShippingDiscountValue,
+  discountValue
+}: ProgressBarProps) => {
+  const { orderForm } = useOrderForm()
+  const [total, setTotal] = useState(0);
+  const [barWidth, setBarWidth] = useState('0%');
+```
+
+### 4.2. Obtendo o Total dos Itens no Carrinho
+
+Neste trecho, o código utiliza o hook useEffect para atualizar o total dos itens no carrinho sempre que houver mudanças no `orderForm`.
+
+```js
+  useEffect(() => {
+    if (orderForm && orderForm.items) {
+      const newTotal = orderForm.items.reduce((accumulator: number, currentItem: any) => {
+        const itemTotal: number = currentItem.priceDefinition.total;
+        return accumulator + itemTotal;
+      }, 0);
+      setTotal(newTotal);
+    }
+  }, [orderForm]);
+```
+
+### 4.3. Formatando o Valor Total
+
+Nesta seção, vamos formatar o valor total dos produtos adicionados ao carrinho. As variáveis `missingAmount` e `missingAmountFormatted` são utilizadas para calcular o montante restante necessário para alcançar o valor que oferece frete grátis e desconto adicional.
+```js
+  const totalNumeric = total / 100;
+  const missingAmount = (freeShippingDiscountValue - totalNumeric);
+  const missingAmountFormatted = missingAmount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+```
+
+### 4.4. Calculando e Atualizando a Largura da Barra de Progresso
+
+Nesta parte, o código utiliza outro `useEffect` para calcular e atualizar dinamicamente a largura da barra de progresso com base no total dos itens no carrinho.
+
+```js
+  useEffect(() => {
+    if (totalNumeric >= freeShippingDiscountValue) {
+      setBarWidth('100%');
+    } else if (totalNumeric >= freeShippingValue) {
+      const progressPercent = ((totalNumeric - freeShippingValue) / 10000) * 25 + 75;
+      setBarWidth(`${progressPercent}%`);
+    } else {
+      const progressPercent = (totalNumeric / freeShippingValue) * 75;
+      setBarWidth(`${progressPercent}%`);
+    }
+  }, [totalNumeric, freeShippingValue, freeShippingDiscountValue]);
+```
+
+### 4.5. Renderização do Componente
+
+Finalmente, o componente é renderizado, exibindo a barra de progresso e mensagens correspondentes aos diferentes estados.
+
+```js
+  return (
+    <div className={styles.priceBarContainer}>
+      <div className={styles.priceBar}>
+        <div className={styles.progressBar}>
+          <div className={styles.progressFill} style={{ width: barWidth }}></div>
+        </div>
+        {totalNumeric >= freeShippingValue && totalNumeric <= freeShippingDiscountValue && (
+          <p className={styles.text}>
+            Compre mais <span className={styles.value}>{missingAmountFormatted}</span> em produtos e ganhe frete grátis + {discountValue}% de desconto.
+          </p>
+        )}
+      </div>
+    </div>
+  )
+}
+
+export default PriceBar
+}
+```
+
+### 4.6. Criação de Schema
+
+Após a criação do componente, implementamos um schema que permite a edição de certos dados, como os valores para alcançar frete grátis e frete grátis com desconto, diretamente através do site-editor.
+
+```js
+ProgressBar.schema = {
+  title: 'Barra de Progresso',
+  type: 'object',
+  properties: {
+    freeShippingValue: {
+      title: 'Valor para ganhar frete grátis',
+      type: 'number',
+      default: 150,
+    },
+    freeShippingDiscountValue: {
+      title: 'Valor para ganhar frete grátis e desconto',
+      type: 'number',
+      default: 300,
+    },
+    discountValue: {
+      title: 'Valor do desconto (apenas números)',
+      type: 'number',
+      default: 10,
+    }
+  },
+}
+```
+
+### 4.7. Estilização do Componente
+
+Após a criação do componente, podemos estilizá-lo para melhorar sua apresentação. Abaixo está uma sugestão de estilos; no entanto, é importante ressaltar que a estilização final pode variar de acordo com as necessidades e diretrizes de design do protótipo no Figma.
+
+```css
+.priceBarContainer {
+  padding: 15px;
+}
+
+.progressBar {
+  height: 5px;
+  border-radius: 25px;
+  background-color: #c7c7c7;
+}
+
+.progressFill {
+  height: 5px;
+  border-radius: 25px;
+  background-color: #41873F;
+  transition: width 0.3s ease-in-out;
+}
+
+.text {
+  color: #41873F;
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1rem;
+}
+
+.value {
+  color: #0e550c;
+  font-weight: 700;
+  font-family: Montserrat, sans-serif;
+}
+```
+
+### 4.8. Chamando o Componente na Store
+
+Para integrar o componente na store, são necessárias modificações em dois arquivos:
+
+1. **Para o Minicart:** No arquivo `store\blocks\components\Minicart\index.jsonc`, adicione a chamada do componente dentro do bloco `"flex-layout.col#minicart-footer"`. Você pode inserir a chamada do componente como mostrado no exemplo abaixo:
+
+```jsonc
+  "flex-layout.col#minicart-footer": {
+    "children": [
+      "flex-layout.row#remove-all-button",
+      "rich-text#minicart-resume",
+      "minicart-summary#cart",
+      "message-purchase-minimum",
+      "info-free-shipping#default",
+      "price-bar-region",
+      "flex-layout.row#minicart-go-to-checkout"
+    ]
+  },
+```
+
+2. **Para o Cart:** No arquivo `store\blocks\pages\cart\common-components.jsonc`, adicione a chamada do componente dentro do bloco `"flex-layout.row#checkout-summary-info"`. Você pode inserir a chamada do componente como mostrado no exemplo abaixo:
+
+```jsonc
+  "flex-layout.row#checkout-summary-info": {
+    "children": [
+      "rich-text#checkout-summary-title",
+      "summary-wrapper#checkout-cart",
+      "message-purchase-minimum",
+      "price-bar-region",
+      "info-free-shipping#default"
+    ],
+    "props": {
+      "marginBottom": 0,
+      "blockClass": "checkout-summary-info",
+      "paddingBottom": 3
+    }
+  },
+```

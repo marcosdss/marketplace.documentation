@@ -1,0 +1,95 @@
+---
+slug: release-20240410
+authors: [mateus]
+tags: [spike]
+---
+
+# Spike - LIONS 329
+
+## Formulário de cadastro | Melhorias nos campos e informações
+
+## 1. Introdução
+
+Aprimoramentos na página de cadastro e reorganização dos campos para melhor clareza e usabilidade.
+
+## 2. Solução
+
+#### Utilização do Repositório Existente
+- Continuar utilizando o repositório atual da página de cadastro ([ObaHortifrutiDeveloper/oba.user-registration](https://github.com/ObaHortifrutiDeveloper/oba.user-registration)).
+- Alterar a ordem dos campos conforme o layout especificado no Figma, mantendo a integridade dos dados no arquivo `schema.ts`.
+
+#### Desenvolvimento do Componente Customizado
+- Aproveitar o repositório mencionado para criar ou editar componentes customizados, as alterações de estilo na `store`
+
+## 3. Diretrizes para o Desenvolvimento
+
+- Criação e customização do componente
+- Utiliza API do Google para encontrar o endereço
+- Utiliza os dados do `formSchema` de cadastro e endereço
+- Desenvolver customização do formulario, seguindo estilização pela `store`
+
+## 3.1 Campos e Validações
+
+**Validações de Campos:**
+
+- Campos obrigatórios devem ser sinalizados em vermelho se não preenchidos.
+- Impedir que o cliente prossiga sem preencher campos obrigatórios.
+- Campos de "Ofertas e Novidades" devem ser preenchidos por padrão, mas permitir alterações.
+- Termos, política de privacidade e regulamento CBQ devem ser selecionados obrigatoriamente para prosseguir.
+
+**Etapa de Cadastro de Endereço:**
+
+- Preenchimento do CEP deverá preencher automaticamente os demais campos.
+- Utilização da API do Google para encontrar o endereço.
+- Campos "Complemento" e "Ponto de referência" não são obrigatórios.
+
+## 4. Desenvolvimento
+
+Apartir da Store, inicia o desenvolvimento, para encontrar componente custom utilizado atualmente.
+
+1. **Endereço de cadastro:** No arquivo `store\routes.json`, bloco onde se encontra a definiçao da rota do cadastro.
+
+```jsonc
+{
+ "store.custom#cadastro": {
+    "path": "/cadastro"
+  }
+}
+```
+
+2. **Página de Cadastro** No arquivo `store\blocks\pages\cadastro\index.jsonc`, temos a chamada do componente customizado, `oba-registration`, que estar localizado em [ObaHortifrutiDeveloper/oba.user-registration](https://github.com/ObaHortifrutiDeveloper/oba.user-registration)
+
+```jsonc
+{
+  "store.custom#cadastro": {
+    "blocks": ["flex-layout.row#cadastro-page"]
+  },
+  "flex-layout.row#cadastro-page": {
+    "children": ["oba-registration"],
+    "props": {
+      "blockClass": "cadastro-page"
+    }
+  }
+}
+```
+
+3. **estilização Página de Cadastro** No pasta `styles\css\pages\cadastro`, onde podemos estilizar o componente de cadastro, possibilidade também de fazer direto no componenten custom.
+
+Exemplo de estilo na store `styles\css\pages\cadastro\vtex.flex-layout.css`:
+```css
+.flexRow--cadastro-page {
+  background-color: #FAFCF9;
+  min-height: 55vh;
+  padding-bottom: 2rem;
+  padding-top: 3rem;
+}
+
+.flexRowContent--cadastro-page {
+  background-color: #fff;
+  border: 1px solid #DADEDC;
+  border-radius: 6px;
+  margin: 0 auto;
+  max-width: 480px;
+  padding: 1rem;
+}
+```

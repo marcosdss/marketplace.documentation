@@ -1,0 +1,185 @@
+---
+slug: release-20240314
+authors: [gustavo]
+tags: [spike]
+---
+
+# Spike - LIONS 219
+
+## Estudo de viabilidade técnica | Lista de compras personalizada
+
+## 1. Introdução
+
+Desejamos que seja criada uma página onde o cliente possa criar uma lista de compra com os produtos que ele deseja adicionar ao pedido. Ele poderá salvar essa lista para usar futuramente em outros pedidos e adicionar todos os produtos de uma vez no carrinho.
+
+A ideia é que o cliente adicione à lista todos os produtos que ele deseja comprar. Ou seja, ele cria de fato uma lista com os produtos e nós exibimos os resultados de acordo com a nossa busca de produtos já existentes no site, em prateleiras com sugestões baseadas no nome do produto que o cliente busca.
+
+## 2. Diretrizes para o Desenvolvimento
+
+Para implementar essa funcionalidade, sugerimos as seguintes etapas:
+
+- **Criação da Entidade no Master Data:** Criar uma entidade no Master Data com os campos necessários para armazenar informações sobre as listas de compras dos usuários.
+- **Criação do Repositório:** Criar um novo repositório para armazenar o componente da lista de compras, facilitando a localização e manutenção do código. Sugere-se o nome "oba.purchase-list" ou "oba.shopping-list" para o novo repositório.
+- **Desenvolvimento do Layout Básico:** Iniciar o desenvolvimento com um layout básico para iniciar a funcionalidade.
+- **Implementação da Funcionalidade:** Adicionar funcionalidades aos botões e demais elementos da página, permitindo que os usuários adicionem produtos à lista de compras e salvem suas escolhas.
+- **Finalização do Layout:** Concluir o layout da página, garantindo uma experiência de usuário fluida e intuitiva.
+
+### 2.1. Master Data
+
+Para armazenar as informações das listas de compras, foi criada uma nova entidade no Master Data. Seguem os detalhes dessa entidade:
+
+**INFORMAÇÕES SOBRE A NOVA ENTIDADE NO [MASTER DATA](https://obahortifruti.vtexcrm.com.br/)**
+
+**Nome da Entidade: ** [Purchase List](https://obahortifruti.ds.vtexcrm.com.br/#RGF0YUVudGl0eSNJbmRleCMjIyNDb25maWd1cmF0aW9uTWVudV9TdWNlc3MjQWpheFJlcXVlc3RFcnJvciNjb250ZW50)
+
+**Acronimo: ** PL
+
+**Campos: **
+
+- userID - ID do Usuário
+- email - E-mail
+- listName - Nome da Lista
+- listId - ID da Lista
+- products - Produtos da Lista
+
+### 2.2. Desenvolvimento Interno
+
+Para facilitar o desenvolvimento, foram fornecidos trechos de código/informações úteis. Seguem as principais diretrizes:
+
+Para pegar as informações referentes ao produto não tem muito segredo, é bem fácil, para ser sincero. Basta usar o useProduct da Vtex.
+
+> 1- Primeiro importe o `useProduct` no arquivo que deseja buscar as informações do produto.
+
+```js
+import { useProduct } from 'vtex.product-context';
+```
+
+> 2- Após isso, adicione dentro da função principal a chamada do `useProduct`.
+
+```js
+const productContext = useProduct();
+```
+
+> 3- Você pode usar um `console.log` para ver as informações do produto no console do navegador e encontrar as informações que precisa para seguir, mas para facilitar um pouco o processo eu já separei as informações necessárias em constantes.
+
+```js
+const productImage = productContext?.product?.items[0].images[0].imageUrl;
+const productName = productContext?.product?.items[0].name;
+const productPrice = productContext?.product?.items[0].sellers[0].commertialOffer.Price;
+const productId = productContext?.product?.items[0].itemId;
+```
+
+Com isso basta criar a função que ficará responsável por adicionar o produto a uma lista de compras criada pelo usuário.
+
+**Exemplos de Requisições**
+
+Deixarei abaixo alguns exemplos de requisições que podemos seguir para enviar e trazer informações do Master Data.
+
+> Para enviar as informações para o Master Data podemos utilizar o metódo `POST` como no exemplo abaixo:
+
+```js
+fetch("/api/dataentities/PL/documents", {
+  method: "POST",
+  headers: {
+    Accept: "application/json",
+    "REST-range": "resources=0-10",
+    "Content-Type": "application/json; charset=utf-8",
+  },
+  body: JSON.stringify({
+    "userId": "0",
+    "listName": "Minha Lista",
+    "listId": "10",
+    "products": "13"
+  }),
+})
+  .then((response) => response.json())
+  .then((data) => {
+    console.log(data);
+  })
+  .catch((err) => console.error(err));
+```
+
+> Para buscar a informação de todos as listas salvas podemos utilizar a requisição abaixo como exemplo:
+
+```js
+fetch("/api/dataentities/PL/search?_fields=userId,listName,listId,products,id", {
+  method: "GET",
+  headers: {
+    Accept: "application/json",
+    "REST-range": "resources=0-10",
+    "Content-Type": "application/json; charset=utf-8",
+  }
+})
+  .then((response) => response.json())
+  .then((data) => {
+    console.log(data);
+  })
+  .catch((err) => console.error(err));
+```
+
+> Para alterar alguma informação presente em uma lista já criada podemos utilizar essa requisição abaixo:
+
+```js
+fetch("/api/dataentities/PL/documents/fcebab64-e22f-11ee-8452-0affca435daf", {
+  method: "PATCH",
+  headers: {
+    Accept: "application/json",
+    "REST-range": "resources=0-10",
+    "Content-Type": "application/json; charset=utf-8",
+  },
+  body: JSON.stringify({
+    "listName": "Lista do Gu"
+  }),
+})
+  .then((response) => response.json())
+  .then((data) => {
+    console.log("Resposta Pós Attachment", data);
+  })
+  .catch((err) => console.error(err));
+```
+
+> Para filtrar a busca de lista por usuário podemos utilizar o método abaixo:
+
+```js
+fetch("/api/dataentities/PL/search?_fields=userId,listName,listId,products,id&userId=teste", {
+  method: "GET",
+  headers: {
+    Accept: "application/json",
+    "REST-range": "resources=0-10",
+    "Content-Type": "application/json; charset=utf-8",
+  }
+})
+  .then((response) => response.json())
+  .then((data) => {
+    console.log(data);
+  })
+  .catch((err) => console.error(err));
+```
+
+> Para consultar algum produto específico podemos utilizar a requisição abaixo, esse exemplo pode ser usado para trazer as informações do produto que ficarão salvas na lista de compras:
+
+```js
+fetch("/api/catalog_system/pub/products/search?fq=productId:100008188", {
+  method: "GET",
+  headers: {
+    Accept: "application/json",
+    "REST-range": "resources=0-10",
+    "Content-Type": "application/json; charset=utf-8",
+  }
+})
+  .then((response) => response.json())
+  .then((data) => {
+    console.log(data);
+  })
+  .catch((err) => console.error(err));
+```
+
+## 3. Links uteis:
+
+- [Vtex - Gift List](https://developers.vtex.com/docs/guides/creating-gift-lists)
+- [Vtex - Search Bar](https://developers.vtex.com/docs/guides/search-overview)
+- [Vtex - Search API](https://developers.vtex.com/docs/api-reference/search-api#get-/api/catalog_system/pub/products/search/-search-)
+- [Vtex - Master Data](https://obahortifruti.vtexcrm.com.br/)
+- [Vtex - Master Data - Consuming data](https://developers.vtex.com/docs/guides/vtex-io-documentation-7-consuming-data#debugging-queries-and-mutations-in-graphql)
+- [Vtex - Criar um campo no Master Data](https://help.vtex.com/pt/tutorial/como-crio-um-campo-no-master-data--frequentlyAskedQuestions_1829)
+- [Vtex - Using GraphQL to retrieve data from Master Data](https://developers.vtex.com/docs/guides/services-6-graphql-retrieving-data-from-master-data)

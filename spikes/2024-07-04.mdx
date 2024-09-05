@@ -1,0 +1,36 @@
+---
+slug: release-20250704
+authors: [kaisuki]
+tags: [spike]
+---
+
+# Spike - LIONS 448
+
+## Checkout | Trava de valor mínimo de pedido
+
+### 1. Objetivo
+Realizar uma análise detalhada e sugerir melhorias para a alteração do valor mínimo de compras no site.
+
+### 2. Contexto da tarefa
+Atualmente, o valor mínimo para compras foi configurado com uma abordagem que envolvia duas etapas:
+
+1. Inserção do valor mínimo total do carrinho via admin da VTEX Configurações (myvtex.com).
+2. Exibição da mensagem de aviso inserida diretamente no front-end, devido à ausência de uma funcionalidade nativa da VTEX que exibisse a mensagem de forma automática, comprometendo a usabilidade.
+
+Precisamos analisar como essa funcionalidade está atualmente cadastrada, identificar os pontos de melhoria e sugerir a melhor forma de ajustar o valor mínimo para compras, garantindo que a usabilidade e as mensagens de aviso sejam exibidas corretamente.
+
+### 3. Solução
+Atualmente temos essa funcionalidade sendo exibida em três cenários distintos, sendo eles:
+- Minicart
+- Resumo do pedido (/cart)
+- Etapa de pagamento (/payment)
+
+As alterações de valores e mensagens no **Minicart** e no **Resumo do pedido** podem ser efetuadas pelo **Site Editor**. No entanto, é importante lembrar que essas mensagens são apenas informativas e não possuem função de trava do processo de compra da loja.
+
+Quanto à **Etapa de pagamento**, tanto a mensagem quanto o valor mínimo de pedido devem ser alterados diretamente no código. Como esta etapa fica fora do ambiente **VTEX IO** e entra no ambiente de **Checkout**, não temos uma forma de alterar essa informação de maneira simples e prática, como no **VTEX Admin** ou no **Site Editor**.
+
+Para que esse processo de alteração de valores e mensagens seja mais fácil e prático, acreditamos que o melhor caminho seja desenvolver um app para o **VTEX Admin** e realizar essas alterações diretamente por ele.
+
+**:memo: Links úteis:**
+- [LIONS-448](https://redeoba.atlassian.net/browse/LIONS-448)
+- [LIONS-124](https://redeoba.atlassian.net/browse/LIONS-124)

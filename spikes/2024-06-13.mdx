@@ -1,0 +1,98 @@
+---
+slug: release-20240613
+authors: [marcola]
+tags: [spike]
+---
+
+# Spike - LIONS 417
+
+### Landing pages | Estudo sobre melhorias p/ autonomia de alterações
+
+**1. Introdução**
+
+Foi solicitado um estudo de possibilidades técnicas, para que o time solicitante, que geralmente são do time de marketing, tenham mais autonomia para fazer alterações de cores, fontes, alteração de posição dos elementos na página, inclusão de prateleiras com card de produtos e imagens, vídeos, data de vigência de campanha ativa (ou para inativação da mesma não depender de deploy), entre outros.
+Se possível, todas essas alterações podem (e devem) ser feitas via site editor.
+
+**2. Solução**
+
+Para cada ponto solicitado (cores, fontes, etc) há diferentes abordagens para resolução da demanda. De modo geral, podemos utilizar o **schema** e tomar como base o repositório **product-list-context**, ambos recursos da **VTEX**.
+
+:::info
+Tanto o schema quanto o product-list-context não possuem documentação técnica, portanto, requer tempo de estudo e testes de funcionamento.
+:::
+
+**3. Diretrizes para o Desenvolvimento**
+
+**Alterações de Cores**
+
+**Alteração de Fontes**
+
+**Imagens**
+
+**Vídeos**
+
+Para estes pontos é possível que seja feito via **schema** em um componente customizado. Com o **schema** é possível acessar as informações cadastradas pelo cliente no Site Editor, com isso, construimos o layout a partir destas informações.
+
+Segue um exemplo:
+
+Neste caso, o cliente colocaria uma cor em hexadeciomal de acordo com sua preferencia e utilizamos a mesma no componente.
+
+```javascript
+background: {
+  title: 'Fundo da Página',
+  type: 'string'
+}
+```
+
+```javascript
+<div style={{ backgroundColor: event.background }}></div>
+```
+
+Segue a mesma lógica para os outros pontos: fontes, imagens e vídeos. Para imagens o retorno é a URL da imagem (src=""), para os vídeos podemos utilizar um campo de texto e no componente um **iframe** ou **video** para receber a URL cadastrada, de acordo com a necessidade.
+
+**Inclusão de Prateleiras**
+
+Para as prateleiras não é possível utilizar o recurso de **schema**, pois não há opção **shelf** ou algo semelhante no atributo **type**.
+
+Neste caso, teremos que estudar o **product-list-context** que é um recurso nativo VTEX e responsável pelas prateleiras da loja.
+
+[product-list-context](https://github.com/vtex-apps/shelf/blob/master/react/Shelf.js)
+
+Segue a função e responsável pela exibição/edição das prateleiras da loja.
+
+[ProductList](https://github.com/vtex-apps/shelf/blob/master/react/Shelf.js#L69)
+
+**Data de Vigência de Campanha**
+
+A ativação é feita no momento em que a página é criada no **/admin/cms/pages** e a inativação ocorre ao exclui-la, não sendo possível programar data.
+
+**Aleração de Posição dos Elementos da Página**
+
+Para reproduzir o efeito de **Drag and Drop** basta posicionar os recursos em **array**, como no exemplo abaixo.
+
+```javascript
+blocos: {
+  title: 'Blocos',
+  type: 'array',
+  items: {
+    type: 'object',
+    properties: {
+      title: {
+        title: 'Titulo da Seção',
+        type: 'string'
+      },
+      description: {
+        title: 'Descrição da Seção',
+        type: 'string'
+      }
+    }
+  }
+}
+```
+
+Dessa forma, o cliente pode posicionar os elementos arrastando no Site Editor.
+
+**:memo: Links úteis:**
+- [Site Editor - Visão geral](https://help.vtex.com/pt/tutorial/site-editor-visao-geral--299Dbeb9mFczUTyNQ9xPe1)
+- [VTEX IO #2 - Criando schema (campo gerenciável no Site Editor)](https://www.youtube.com/watch?v=tUNk5g9ZWss)
+- [product-list-context](https://github.com/vtex-apps/shelf/tree/master)

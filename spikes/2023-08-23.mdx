@@ -1,0 +1,83 @@
+---
+slug: release-20230823
+authors: [marcola]
+tags: [spike]
+---
+
+# Spike - LIONS 191
+
+### Assinatura | Card de produtos
+
+**1. Introdução**
+
+Desejamos que o card de produto, quando a opção de assinatura estiver disponível para o produto, exiba a opção com o botão “Compra programada”, seguindo sempre a proposta de layout do figma.
+O comportamento esperado e o redirecionamento do botão será o mesmo do clique no card de produto que já existe hoje (atual), de redirecionar o cliente para a página do produto, pra que lá ele adicione o produto ao carrinho de compras, com a opção de compra recorrente.
+
+**2. Solução**
+
+**2.1** Podemos exibir as modificações visuais a partir de um parâmetro fornecido pelo **Contexto do Produto**. Dentro de **selectedItem
+** em **variations**, temos **activeSubscriptions**.
+
+**2.2** Uma segunda opção seria separar todos estes produtos em uma coleção (cluster) e usar ela como referencia no código.
+
+**3. Diretrizes para o Desenvolvimento**
+
+https://help.vtex.com/pt/tutorial/como-criar-um-anexo-de-assinatura--2bUuKyPflA8cOGLv8OvaKK
+https://help.vtex.com/pt/tutorial/o-que-e-um-anexo--aGICk0RVbqKg6GYmQcWUm
+
+**3.1 Buscar Configuração do Produto**
+
+Com o **vtex.product-context** conseguimos obter informações do produto, na Página de Produto ele traz as informações no **attachments** mas nas vitrines a informação é entregue de outra forma.
+
+Segue abaixo:
+
+```bash
+selectedItem: {
+  variations: {
+    [
+      {
+          "name": "activeSubscriptions",
+          "values": [
+              "assinatura-molho-de-tomate-teste"
+          ],
+          "__typename": "Property"
+      }
+    ]
+  }
+}
+```
+
+**3.2 Posição dos elementos**
+
+Identificar em quais componentes será necessário inserir os elementos da demanda, e construir conforme proposto em layout.
+
+**3.3 Tagueamento**
+
+[GTM da LOJA](https://tagmanager.google.com/?authuser=1#/container/accounts/6001506499/containers/89572604/workspaces/37)
+
+No **Google Tag Manager**:
+
+- Criar <em>acionador de clique</em> para o botão de Recorrência;
+- Criar tag para o disparo (com o acionador atrelado) com 1 parametro referente a página do usuário;
+
+| Name           |       Value                    |
+| :-----:           | :-----------------:             |
+| Evento    | **produto_com_recorrencia**     |
+| Parâmetro    | **url_produto_com_recorrencia**     |
+| Valor | **{{ Page URL }}** |
+
+*Utilizar o Page URL ou criar uma variável que pegue o título da página. Pegar o title que vem no pageView.
+
+**4. Folha de Separação**
+
+Atualmente há duas dinâmicas que preenchem a Folha de Separação:
+
+1. [Comentário do Produto - AddCommentInCart()](https://github.com/ObaHortifrutiDeveloper/oba.cart-components/blob/ff33b964745730671cd5c9809124bbb94bfcebd3/react/components/AddCommentInProduct/AddCommentInCart.tsx#L18)
+2. [Unidade ou Peso - SelectMeasurement()](https://github.com/ObaHortifrutiDeveloper/oba.regionalization-components)
+
+Precisamos implementar um fluxo para a assinatura, considerando a dinâmica das outras.
+
+**:memo: Links úteis:**
+- [Oque é um anexo](https://help.vtex.com/pt/tutorial/o-que-e-um-anexo--aGICk0RVbqKg6GYmQcWUm) <br/>
+- [Como criar um anexo de assinatura](https://help.vtex.com/pt/tutorial/como-criar-um-anexo-de-assinatura--2bUuKyPflA8cOGLv8OvaKK)
+- [Google Tag Manager](https://support.google.com/tagmanager/answer/12811173?hl=en)

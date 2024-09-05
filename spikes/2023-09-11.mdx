@@ -1,0 +1,94 @@
+---
+slug: release-20230830
+authors: [marcola]
+tags: [spike]
+---
+
+# Spike - LIONS 192
+
+### Assinatura | Página de produto
+
+**1. Introdução**
+
+Desejamos que a opção de assinatura e suas informações estejam disponíveis na página de produto. Com isso, precisamos que sejam incluídas as especificações a seguir, sempre seguindo a proposta de layout do figma.
+
+**2. Solução**
+
+**2.1** Podemos exibir as modificações visuais a partir de um parâmetro fornecido pelo Contexto do Produto. Dentro de **selectedItem** em **attachments**, temos **vtex.subscription** (este nome pode variar de acordo com o cadastro).
+
+**2.2** Uma segunda opção seria separar todos estes produtos em uma coleção (cluster) e usar ela como referencia no código.
+
+**3. Diretrizes para o Desenvolvimento**
+
+**3.1 Buscar Configuração do Produto**
+
+Com o **vtex.product-context** conseguimos obter informações do produto, em **attachments** conseguimos informações de assinatura/anexo.
+
+**3.2 Accordion e Pop Up**
+
+Para o accordion, podemos utilizar o **Disclosure Layout** ou desenvolver do zero, caso tenha algum limitação/impedimento no recurso nativo.
+
+Para o o pop up, podemos utilizar o **Modal Layout**. Neste segue o mesmo conselho do accordion, ou seja, são recursos nativos e com possiveis limitações, se houver necessidade será preciso desenvolve-lo do zero.
+
+**3.3 Frequência da Recorrência**
+
+Após ter desenvolvido o layout, a frequência deve ser inserida via attachment ao orderForm.
+
+Exemplo abaixo:
+
+```bash
+fetch(`/api/checkout/pub/orderForm/ORDERFORM_ID/items/ITEM_INDEX/attachments/vtex.subscription`,
+  {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      content: { vtex.subscription.key.frequency: "1 week" },
+      expectedOrderFormSections: [
+        "items",
+        "totalizers",
+        "clientProfileData",
+        "shippingData",
+        "paymentData",
+        "sellers",
+        "messages",
+        "marketingData",
+        "clientPreferencesData",
+        "storePreferencesData",
+        "giftRegistryData",
+        "ratesAndBenefitsData",
+        "openTextField",
+        "commercialConditionData",
+        "customData",
+      ],
+      noSplitItem: true,
+    }),
+  }
+)
+  .then((response) => response.json())
+  .then((data) => {
+    console.log("Resposta Pós Attachment", data);
+  })
+  .catch((err) => console.error(err));
+```
+
+**3.3 Tagueamento**
+
+No repositório **oba.google-tag-manager**:
+
+- Acrescentar **dimension5** (valor boleano, caso o produto tenha assinatura ou não) ao evento **productDetail**, **productImpression**, **addToCart** e **removeFromCart** e demais eventos onde o produto esteja presente.
+
+**4. Folha de Separação**
+
+Atualmente há duas dinâmicas que preenchem a Folha de Separação:
+
+1. [Comentário do Produto - AddCommentInCart()](https://github.com/ObaHortifrutiDeveloper/oba.cart-components/blob/ff33b964745730671cd5c9809124bbb94bfcebd3/react/components/AddCommentInProduct/AddCommentInCart.tsx#L18)
+2. [Unidade ou Peso - SelectMeasurement()](https://github.com/ObaHortifrutiDeveloper/oba.regionalization-components)
+
+Precisamos implementar um fluxo para a assinatura, considerando a dinâmica das outras.
+
+**:memo: Links úteis:**
+- [Oque é um anexo](https://help.vtex.com/pt/tutorial/o-que-e-um-anexo--aGICk0RVbqKg6GYmQcWUm) <br/>
+- [Como criar um anexo de assinatura](https://help.vtex.com/pt/tutorial/como-criar-um-anexo-de-assinatura--2bUuKyPflA8cOGLv8OvaKK)
+- [Disclosure Layout](https://developers.vtex.com/docs/apps/vtex.disclosure-layout)
+- [Modal Layout](https://developers.vtex.com/docs/apps/vtex.modal-layout)
+- [Google Tag Manager](https://support.google.com/tagmanager/answer/12811173?hl=en)

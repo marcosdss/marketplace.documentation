@@ -1,0 +1,38 @@
+---
+slug: release-20231113
+authors: [marcola]
+tags: [spike]
+---
+
+# Spike - LIONS 268
+
+### Assinatura | Duplicidade de produto
+
+**1. Introdução**
+
+Produtos com anexo sofrem duplicidade ao tentar aumentar a quantidade. O problema é conhecido pela VTEX e o tema está em aberto, sem solução.
+
+[Issue VTEX](https://help.vtex.com/known-issues/products-in-the-productlist-that-have-an-itemattachment-duplicate-when-the-quantity-is-increased--2rKPKD21uXZ8iSIq8wNiVf)
+
+**2. Solução**
+
+**2.1** Considerando que o problema ocorre especificamente quando mudamos a quantidade do produto, podemos remove-lo e adiciona-lo novamente.
+
+**3. Diretrizes para o Desenvolvimento**
+
+**3.1 updateQuantity()**
+
+Remover o produto ao aumentar ou diminuir a quantidade. Passar **quantity** com valor **0**.
+
+**3.2 addItems()**
+
+No resultado do updateQuantity, adicionar o produto com a quantidade desejada assim que ele for removido.
+
+:::note
+Essa solução vai causar Cumulative Layout Shift (CLS) no componente. Troca de layout para cada mudança que ocorre durante toda a vida útil de uma página. **Informação completa nos links úteis.**
+:::
+
+**:memo: Links úteis:**
+- [Add Items](https://developers.vtex.com/docs/guides/add-cart-items) <br/>
+- [order items](https://github.com/vtex-apps/order-items) <br/>
+- [Layout Shift](https://web.dev/articles/cls?hl=pt-br)
