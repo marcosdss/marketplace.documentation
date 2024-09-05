@@ -2,7 +2,7 @@
 sidebar_position: 1
 ---
 
-# Oba Hortifruti - Developer Space
+# Comolatti - Developer Space
 
 Let's discover **Docusaurus in less than 2 minutes**.
 

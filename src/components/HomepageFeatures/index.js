@@ -8,7 +8,7 @@ const FeatureList = [
     Svg: require('@site/static/img/developer-components.svg').default,
     description: (
       <>
-        Explore as documentações e guias dos componentes do projeto Oba Hortifruti.
+        Explore as documentações e guias dos componentes do projeto Comolatti.
       </>
     ),
   },
