@@ -6,19 +6,19 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'Oba Hortifruti Developer',
+  title: 'Comolatti Developer',
   tagline: 'Documentação para desenvolvedores',
-  favicon: 'img/obahortifruti-favicon.ico',
+  favicon: 'img/comolatti-favicon.ico',
 
   // Set the production url of your site here
-  url: 'https://oba-documentation.vercel.app',
+  url: 'https://comolatti-documentation.vercel.app',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'obahortrifrutideveloper', // Usually your GitHub org/user name.
+  organizationName: 'comolattidevelopers', // Usually your GitHub org/user name.
   projectName: 'documentation', // Usually your repo name.
 
   onBrokenLinks: 'throw',
@@ -80,7 +80,7 @@ const config = {
         title: 'Início',
         logo: {
           alt: 'My Site Logo',
-          src: 'img/obahortifruti-favicon.ico',
+          src: 'img/logo-comolatti.png',
         },
         items: [
           {
@@ -93,7 +93,7 @@ const config = {
           {to: '/blog', label: 'Release Notes', position: 'left'},
           {to: '/tech-insights', label: 'Tech Insights', position: 'left'},
           {
-            href: 'https://github.com/ObaHortifrutiDeveloper',
+            href: 'https://github.com/pitstop-marketplace',
             label: 'GitHub',
             position: 'right',
           },
@@ -103,20 +103,16 @@ const config = {
         style: 'dark',
         links: [
           {
-            title: 'Oba Hortifruti',
+            title: 'Comolatti',
             items: [
               {
-                label: 'Store',
-                href: 'https://www.obahortifruti.com.br',
+                label: 'Site',
+                href: 'https://www.comolatti.com.br/',
               },
               {
                 label: 'GitHub',
-                href: 'https://github.com/ObaHortifrutiDeveloper',
-              },
-              {
-                label: 'Jira Projects',
-                href: 'https://redeoba.atlassian.net/jira/projects',
-              },
+                href: 'https://github.com/pitstop-marketplace',
+              }
             ],
           },
           {
@@ -154,7 +150,7 @@ const config = {
             ],
           },
         ],
-        copyright: `Oba Hortifruti © - ${new Date().getFullYear()}, Todos os direitos reservados.`,
+        copyright: `Comolatti © - ${new Date().getFullYear()}, Todos os direitos reservados.`,
       },
       prism: {
         theme: lightCodeTheme,
