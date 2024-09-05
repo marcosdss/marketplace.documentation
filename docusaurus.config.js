@@ -64,9 +64,9 @@ const config = {
     [
       '@docusaurus/plugin-content-blog',
       {
-        id: 'spikes',
-        routeBasePath: 'spikes',
-        path: './spikes',
+        id: 'documentacoes',
+        routeBasePath: 'documentacoes',
+        path: './documentacoes',
       },
     ],
   ],
@@ -89,7 +89,7 @@ const config = {
             position: 'left',
             label: 'Componentes',
           },
-          {to: '/spikes', label: 'Spikes', position: 'left'},
+          {to: '/documentacoes', label: 'Documentações', position: 'left'},
           {to: '/blog', label: 'Release Notes', position: 'left'},
           {to: '/tech-insights', label: 'Tech Insights', position: 'left'},
           {
